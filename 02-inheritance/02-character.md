@@ -53,7 +53,7 @@ We will implement standard health subtraction arithmetic. By using the `virtual`
 We set another method for attacking that will be modified by subclasses.
 
 ```csharp
-        public virtual void PerformAttack(Character target) { };
+        public virtual void PerformAttack(Character target) { }
     }
 }
 ```
