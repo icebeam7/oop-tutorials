@@ -84,7 +84,7 @@ We need a loop to execute real-time alternating combat rounds until either the p
             {
                 Character currentEnemy = dungeonEnemies.Peek();
                 Console.WriteLine($"\n--------------------------------------------");
-                Console.WriteLine($"💥 A wild {currentEnemy.GetType().Name} appears: {currentEnemy.Name}!");
+                Console.WriteLine($"A wild {currentEnemy.GetType().Name} appears: {currentEnemy.Name}!");
                 Console.WriteLine($"--------------------------------------------");
 
                 while (player.IsAlive && currentEnemy.IsAlive)
