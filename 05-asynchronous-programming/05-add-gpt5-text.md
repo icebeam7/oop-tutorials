@@ -12,18 +12,31 @@ dotnet user-secrets set "Foundry:TextModel" "your-text-model-name"
 
 ## 2) Add the GPT-5 model classes
 
-We create the request and response classes for the question-and-answer flow.
+For the Responses API, the request body uses the `model` and `input` fields. We also keep the response parsing simple and focused on the text returned by the model.
+
+Add these two new classes in the `Models` folder:
+
+**TextGenerationRequest.cs**:
 
 ```csharp
 namespace AiDemo.Models;
 
+using System.Text.Json.Serialization;
+
 public class TextGenerationRequest
 {
-    public string Prompt { get; set; } = string.Empty;
-    public int MaxTokens { get; set; } = 300;
-    public double Temperature { get; set; } = 0.7;
+    [JsonPropertyName("model")]
+    public string Model { get; set; } = string.Empty;
+
+    [JsonPropertyName("input")]
+    public string Input { get; set; } = string.Empty;
+
+    [JsonPropertyName("max_output_tokens")]
+    public int MaxOutputTokens { get; set; } = 300;
 }
 ```
+
+**TextGenerationResponse.cs**:
 
 ```csharp
 namespace AiDemo.Models;
@@ -35,8 +48,6 @@ public class TextGenerationResponse
     public string? ErrorMessage { get; set; }
 }
 ```
-
-These classes match the JSON structure the model returns and keep the request/response objects strongly typed.
 
 ## 3) Add the text generation handler and properties
 
@@ -67,35 +78,73 @@ public async Task OnPostGenerateText()
 
     var request = new TextGenerationRequest
     {
-        Prompt = TextPrompt,
-        MaxTokens = 250,
-        Temperature = 0.4
+        Model = model,
+        Input = TextPrompt,
+        MaxOutputTokens = 250
     };
 
-    var json = JsonSerializer.Serialize(request);
-    using var content = new StringContent(json, Encoding.UTF8, "application/json");
+    var requestJson = JsonSerializer.Serialize(request);
+    using var content = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
-    var response = await client.PostAsync(
-        $"{endpoint.TrimEnd('/')}/models/{model}/chat/completions?api-version=2024-05-01-preview",
-        content);
+    var textEndpoint = endpoint.TrimEnd('/');
+    if (!textEndpoint.EndsWith("/responses", StringComparison.OrdinalIgnoreCase))
+    {
+        textEndpoint = textEndpoint.Contains("/openai", StringComparison.OrdinalIgnoreCase)
+            ? $"{textEndpoint}/responses"
+            : $"{textEndpoint}/openai/v1/responses";
+    }
+
+    var response = await client.PostAsync($"{textEndpoint}?api-version=v1", content);
 
     if (response.IsSuccessStatusCode)
     {
-        var result = await response.Content.ReadFromJsonAsync<TextGenerationResponse>();
-        TextAnswer = result?.Answer ?? "No answer was returned.";
+        var body = await response.Content.ReadAsStringAsync();
+        using JsonDocument responseJson = JsonDocument.Parse(body);
+
+        string? answer = null;
+        if (responseJson.RootElement.TryGetProperty("output", out var output))
+        {
+            foreach (var item in output.EnumerateArray())
+            {
+                if (!item.TryGetProperty("content", out var contentArray))
+                {
+                    continue;
+                }
+
+                foreach (var contentItem in contentArray.EnumerateArray())
+                {
+                    if (contentItem.TryGetProperty("type", out var type) &&
+                        type.GetString() == "output_text" &&
+                        contentItem.TryGetProperty("text", out var textElement))
+                    {
+                        answer = textElement.GetString();
+                        break;
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(answer))
+                {
+                    break;
+                }
+            }
+        }
+
+        TextAnswer = answer ?? "No answer was returned.";
     }
     else
     {
+        var errorBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(errorBody);
         TextAnswer = "The GPT-5 request failed.";
     }
 }
 ```
 
-This keeps the image logic separate from the text logic and makes it easier to reason about each request.
+This keeps the image logic separate from the text logic and uses the correct endpoint for the GPT-5 Responses API.
 
 ## 4) Add the second button in the same form
 
-We keep one form and add a second button that uses a different `asp-page-handler` value:
+Add a second button that uses a different `asp-page-handler` value along with the corresponding `textarea` HTML element so the user can enter a prompt that will be sent to the AI Model:
 
 ```cshtml
 <form ...>
@@ -131,6 +180,10 @@ Add this code below the div element that contains the generated image:
 
 
 The second button calls `OnPostGenerateText`, while the image button still calls `OnPostGenerateImage`. This keeps the page-handler pattern simple and avoids unnecessary duplicate form markup.
+
+## 5) Test text generation
+
+Build and run the app using the web browser. This time, enter a prompt and click the **Generate text** button. The text will be generated in the `textAnswer` text area element.
 
 ---
 
