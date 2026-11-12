@@ -60,7 +60,7 @@ Now that we have the secret, we can configure Entity Framework Core to use it.
 First, install the SQL Server provider:
 
 ```bash
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 10.0.0
 ```
 
 Then create a database context class in a folder named `Data`:
