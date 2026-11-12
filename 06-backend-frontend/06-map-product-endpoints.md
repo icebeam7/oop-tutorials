@@ -34,7 +34,7 @@ public static class ProductEndpoints
             return product is null ? Results.NotFound() : Results.Ok(product);
         });
 
-        app.MapPost("/api/products", async (Products product, IProductService productService) =>
+        app.MapPost("/api/products", async (Product product, IProductService productService) =>
         {
             if (product is null)
             {
@@ -51,7 +51,7 @@ public static class ProductEndpoints
             return wasDeleted ? Results.NoContent() : Results.NotFound();
         });
 
-        app.MapPut("/api/products/{id:int}", async (int id, Products product, IProductService productService) =>
+        app.MapPut("/api/products/{id:int}", async (int id, Product product, IProductService productService) =>
         {
             var updatedProduct = await productService.UpdateAsync(id, product);
             return updatedProduct is null ? Results.NotFound() : Results.Ok(updatedProduct);
