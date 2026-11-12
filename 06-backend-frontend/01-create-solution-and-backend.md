@@ -55,6 +55,20 @@ dotnet add package Swashbuckle.AspNetCore --version 10.0.0
 
 Swagger UI generates a visual documentation page for the API. You can use it to test each route directly in the browser without needing additional tools.
 
+Add the following code in your `Program.cs` file after `builder.Services.AddOpenApi()`:
+
+```csharp
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+```
+
+Then, add the following two lines inside the `if (app.Environment.IsDevelopment())` statement:
+
+```csharp
+    app.UseSwagger();
+    app.UseSwaggerUI();
+```
+
 ## 6. Run the default app to confirm everything works
 
 Execute the project:
