@@ -189,8 +189,8 @@ At this point, you have created a working Minimal API backend with:
 - Swagger UI
 - Secret Manager configuration for Azure SQL
 
-This is the foundation for the next part: adding the frontend project to the same solution.
+This is the foundation for Part 2: adding a Razor Pages frontend to the same solution, starting in Step 8.
 
-[Previous: Step 6 - Map the product endpoints](06-map-product-endpoints.md)
+[Previous: Step 6 - Map the product endpoints](06-map-product-endpoints.md) | [Next: Step 8 - Create the Razor Pages frontend](08-create-razor-pages-project.md)
 
-> Part 2 will add the frontend app and connect it to this backend.
+> Part 2 adds the frontend model, API client, and progressively implemented CRUD and search pages.
