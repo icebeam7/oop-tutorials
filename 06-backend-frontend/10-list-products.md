@@ -108,6 +108,6 @@ The `asp-page` Tag Helper generates a link from the Razor Page path. The templat
 
 ## Checkpoint
 
-Build the frontend as in Step 9 and restart it. Visit `http://localhost:5200/Products`. The page should load records from the API on each visit. An empty database should show "No products found." Stop the backend briefly, reload, and confirm the error message; then restart it before the next step.
+Run both the backend and frontend projects in separate terminals. Visit `http://localhost:xxxx` and click on the `Products` page. It should load records from the API. An empty database should show `No products found.` message. If you stop the backend briefly and reload the page, you will see the error message in the `Products` page. 
 
 [Previous: Step 9 - Add the frontend model and API client](09-frontend-model-and-api-client.md) | [Next: Step 11 - Add details navigation](11-add-details-navigation.md)
