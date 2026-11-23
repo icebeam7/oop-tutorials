@@ -62,15 +62,14 @@ The browser will request Razor Pages from the frontend. Its C# PageModels will c
 
 ## 4. Run the generated frontend
 
-In a second terminal, from the solution folder, run:
+In a second terminal, from the solution folder, move to the project folder and run the application:
 
 ```bash
-dotnet run --project frontend/Frontend.Web --launch-profile http --urls http://localhost:5200
+cd frontend/Frontend.Web
+dotnet run
 ```
 
-This starts the frontend on a different port. Open `http://localhost:5200` and confirm that the generated home page loads. Keep separate terminals for the two applications. Stop only the frontend with Ctrl+C before changing its startup configuration in Step 9.
-
-If the frontend redirects to HTTPS, use its configured HTTPS launch profile and address instead, or remove `app.UseHttpsRedirection()` only for this local HTTP exercise. Never disable HTTPS redirection in a production deployment just to accommodate these example ports.
+This starts the frontend. Open `http://localhost:xxxx` (replace the placeholder with the port that you see in the Terminal) and confirm that the generated home page loads. Keep separate terminals for the two applications (backend and frontend). Stop only the frontend with Ctrl+C before continuing with the rest of steps.
 
 ## Checkpoint
 
