@@ -93,12 +93,7 @@ Immediately after the existing `builder.Services.AddRazorPages();` and before `b
 ```csharp
 var backendUrl = builder.Configuration["BackendApi:BaseUrl"];
 
-if (!Uri.TryCreate(backendUrl, UriKind.Absolute, out var backendUri))
-{
-    throw new OptionsValidationException(
-        "BackendApi", typeof(ProductApiClient),
-        new[] { "Set BackendApi:BaseUrl to an absolute HTTP(S) URL ending in '/'." });
-}
+Uri.TryCreate(backendUrl, UriKind.Absolute, out var backendUri);
 
 builder.Services.AddHttpClient<ProductApiClient>(client =>
 {
@@ -107,7 +102,8 @@ builder.Services.AddHttpClient<ProductApiClient>(client =>
 });
 ```
 
-The guard fails early when configuration is absent or malformed. `AddHttpClient` registers a typed client and lets the framework manage underlying HTTP connection lifetimes. `BaseAddress` supplies the common URL prefix; the timeout prevents an unavailable API from keeping a page waiting indefinitely. Keep the rest of the generated startup code, including `app.MapRazorPages()`.
+- `AddHttpClient` registers a typed client and lets the framework manage underlying HTTP connection lifetimes. 
+- `BaseAddress` supplies the common URL prefix; the timeout prevents an unavailable API from keeping a page waiting indefinitely.
 
 ## Checkpoint
 
@@ -117,6 +113,6 @@ From the `Frontend.Web` folder, run:
 dotnet build
 ```
 
-This compiles the model and client registration. Restart the frontend using the Step 8 command so the Development configuration is loaded. It still displays the template home page; Step 10 will make the first product request.
+This compiles the model and client registration. If you run the frontend, you will see it still displays the template home page; in the next step, we will make the first product request.
 
 [Previous: Step 8 - Create the Razor Pages frontend](08-create-razor-pages-project.md) | [Next: Step 10 - Load the products page](10-list-products.md)
